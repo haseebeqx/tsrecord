@@ -1,0 +1,20 @@
+{
+  "name": "tsrecord",
+  "version": "1.0.0",
+  "description": "ActiveRecord implementation using Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haseebeqx/TsRecord.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haseebeqx/TsRecord/issues"
+  },
+  "homepage": "https://github.com/haseebeqx/TsRecord#readme"
+}
