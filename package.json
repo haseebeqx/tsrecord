@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/haseebeqx/TsRecord/issues"
   },
-  "homepage": "https://github.com/haseebeqx/TsRecord#readme"
+  "homepage": "https://github.com/haseebeqx/TsRecord#readme",
+  "devDependencies": {
+    "@types/node": "0.0.2",
+    "typescript": "^2.0.10"
+  }
 }
