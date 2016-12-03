@@ -1,15 +1,11 @@
-namespace tsrecord.Drivers
+export interface IDriver
 {
-    interface IDriver
-    {
-        setTable(table :string);
-        getTable() :string;
-        setElements(elements :Array<string>);
-        getElements(): string;
-        getElementsArray() :Array<string>; 
-        subExpression(expression :IDriver);
-        beginTransaction();
-        commit();
-        rollBack();
-    }
+    setTable(table :string);
+    getTable() :string;
+    setElements(elements :Array<string>);
+    getElementsString(): string;
+    getElementsArray() :Array<string>; 
+    beginTransaction() :string;
+    commit(): string;
+    rollBack(): string;
 }
