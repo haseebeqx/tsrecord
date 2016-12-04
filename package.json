@@ -20,5 +20,8 @@
   "devDependencies": {
     "@types/node": "0.0.2",
     "typescript": "^2.0.10"
+  },
+  "dependencies": {
+    "mysql": "^2.12.0"
   }
 }

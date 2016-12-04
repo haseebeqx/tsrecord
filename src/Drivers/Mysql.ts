@@ -1,9 +1,22 @@
-import {IDriver} from "./IDriver";
 
-class Mysql implements IDriver{
+import {IDriver,IQueryResult} from "./IDriver";
+import * as mysql from "mysql";
+export class Mysql implements IDriver{
+
     private tableName :string;
-    private elemets :Array<string>;
+    private elements :Array<string>;
     private subExpression
+    private connection :any;
+    private operation: string;
+    private where :string;
+
+    constructor(){
+        this.elements = [];
+    }
+
+    getName():string{
+        return "MySql";
+    }
     setTable(table :string){
         this.tableName = table;
     }
@@ -13,15 +26,18 @@ class Mysql implements IDriver{
     }
 
     setElements(elements :Array<string>){
-        this.elemets = elements;
+        this.elements = elements;
     }
 
     getElementsString():string{
-        return this.elemets.join(", ")
+        if(this.elements.length==0){
+            return "*";
+        }
+        return this.elements.join(", ")
     }
 
     getElementsArray() :Array<string>{
-        return this.elemets;
+        return this.elements;
     }
 
     beginTransaction():string{
@@ -32,5 +48,47 @@ class Mysql implements IDriver{
     }
     rollBack(){
         return "ROLLBACK";
+    }
+
+    setConnection(options :any){
+        this.connection = mysql.createConnection(options);
+    }
+
+    select(){
+        this.operation = "SELECT";
+        
+    }
+
+    execute(callBack :(result :IQueryResult)=>void){
+        if(this.operation==undefined){
+            throw new Error("operation is undefined");
+        }
+        if(this.tableName == undefined){
+            throw new Error("Table Name Not Set");
+        }
+        let statement = this.generateStatement();
+        this.connection.connect();
+        this.connection.query(statement, (err,rows,fields)=> {
+            if(err){
+                throw err;
+            }
+            let output :IQueryResult ={
+                rows : rows,
+                fields:fields
+            };
+            callBack(output);
+        });
+        this.connection.end();
+    }
+
+    private generateStatement():string{
+        if(this.operation=="SELECT"){
+            return this.generateSelect();
+        }
+        throw new Error("UnSuported Operation");
+    }
+
+    private generateSelect():string{
+        return this.operation+" "+this.getElementsString()+" FROM "+this.tableName;
     }
 }
