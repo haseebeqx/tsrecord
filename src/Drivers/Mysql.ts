@@ -5,13 +5,20 @@ export class Mysql implements IDriver{
 
     private tableName :string;
     private elements :Array<string>;
+    private elementPlaceHolder: Array<string>;
     private subExpression
     private connection :any;
     private operation: string;
-    private where :string;
+    private wherePart :string;
+    private whereArgs: any[];
+    private args: any[];
+
 
     constructor(){
         this.elements = [];
+        this.whereArgs = [];
+        this.elementPlaceHolder=[];
+        this.wherePart = "";
     }
 
     getName():string{
@@ -27,13 +34,16 @@ export class Mysql implements IDriver{
 
     setElements(elements :Array<string>){
         this.elements = elements;
+        for(let i=0;i<elements.length;i++){
+            elements.push("??");
+        }
     }
 
-    getElementsString():string{
+    private getElementsString():string{
         if(this.elements.length==0){
             return "*";
         }
-        return this.elements.join(", ")
+        return this.elementPlaceHolder.join(",");
     }
 
     getElementsArray() :Array<string>{
@@ -68,7 +78,7 @@ export class Mysql implements IDriver{
         }
         let statement = this.generateStatement();
         this.connection.connect();
-        this.connection.query(statement, (err,rows,fields)=> {
+        this.connection.query(statement,this.args, (err,rows,fields)=> {
             if(err){
                 throw err;
             }
@@ -81,6 +91,13 @@ export class Mysql implements IDriver{
         this.connection.end();
     }
 
+    where(property :string,operator:string,value:any){
+        if(this.wherePart!=""){
+            this.wherePart += " AND ";
+        }
+        this.wherePart  += "?? "+operator+" ?";
+        this.whereArgs.push(property,value);
+    }
     private generateStatement():string{
         if(this.operation=="SELECT"){
             return this.generateSelect();
@@ -89,6 +106,8 @@ export class Mysql implements IDriver{
     }
 
     private generateSelect():string{
-        return this.operation+" "+this.getElementsString()+" FROM "+this.tableName;
+        let select= this.operation+" "+this.getElementsString()+" FROM "+this.tableName+" WHERE "+this.wherePart;
+        this.args = this.elements.concat(this.whereArgs);
+        return select;
     }
 }

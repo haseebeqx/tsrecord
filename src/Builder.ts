@@ -1,6 +1,7 @@
 import {IDriver,IQueryResult} from "./Drivers/IDriver";
 import {DriverConfig} from "./DriverConfig";
 import {Config} from "./Config";
+
 export class Builder{
 
     constructor(driver? :IDriver,connection? :any){
@@ -14,6 +15,7 @@ export class Builder{
             this.driver.setConnection(Config[conn]);
         }
     }
+
     private driver :IDriver;
 
     setConnection(name :string){
@@ -30,6 +32,18 @@ export class Builder{
     {
         this.driver.select();
         this.driver.execute(callback);
+    }
+
+
+    where(first: string,second:any) :Builder;
+    where(first:string,operator:string,second:any) : Builder;
+    where(first:string,operator:string,second?:string): Builder{
+        if(second==undefined){
+            second = operator;
+            operator = "=";
+        }
+        this.driver.where(first,operator,second);
+        return this;
     }
 
     setDriver(driver ) :Builder

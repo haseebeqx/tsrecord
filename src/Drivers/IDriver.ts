@@ -4,7 +4,7 @@ export interface IDriver
     getTable() :string;
     getName();
     setElements(elements :Array<string>);
-    getElementsString(): string;
+    // getElementsString(): string;
     getElementsArray() :Array<string>; 
     beginTransaction() :string;
     commit(): string;
@@ -12,6 +12,7 @@ export interface IDriver
     setConnection(options :any);
     select();
     execute(callback:(result :IQueryResult)=>void);
+    where(first :string,operator :string,second:string)
    // getConnection(): string;
 }
 
