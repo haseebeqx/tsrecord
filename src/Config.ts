@@ -1,5 +1,5 @@
 export class Config{
-  static  "MySql" = {
+  static  "MYSQL" = {
         host     : 'localhost',
         user     : 'root',
         database : 'db'
