@@ -8,18 +8,23 @@ import {Config} from "./Config";
 export class Builder{
 
     private driver :IDriver;
+    private baseBuilder :IDriver;
 
     constructor(driver? :IDriver,connection? :any){
         if(driver == undefined){
             this.driver = DriverConfig.default();
+            this.baseBuilder = DriverConfig.default();
         }else{
             this.driver = driver;
+            this.baseBuilder = driver;
         }
         if(connection == undefined){
             let conn =this.driver.getName();
             this.driver.setConnection(Config[conn]);
+            this.baseBuilder.setConnection(Config[conn]);
         }else{
             this.driver.setConnection(connection);
+            this.baseBuilder.setConnection(connection);
         }
     }
 
@@ -29,6 +34,7 @@ export class Builder{
      */
     setConnection(name :string){
         this.driver = Connection.getConnection(name);
+        this.baseBuilder = Connection.getConnection(name);
     }
 
     /**
@@ -91,6 +97,7 @@ export class Builder{
         this.driver.execute(callback);
     }
 
+    where(w:(builder :Builder)=>void):Builder;
     /**
      * Where implementation for "="
      * @param {string} key - Column Name
@@ -104,12 +111,44 @@ export class Builder{
      * @param {any} value - value
      */
     where(key:string,operator:string,value:any) : Builder;
-    where(first:string,operator:string,second?:string): Builder{
+    where(first :any,operator?:string,second?:any): Builder{
+
+        if(typeof first == "function"){
+            this.baseBuilder.clear();
+            first(new Builder(this.baseBuilder));
+            let inner = this.baseBuilder.getWhere();
+            this.driver.addInnerWhere(inner);
+            return this;
+        }
         if(second==undefined){
             second = operator;
             operator = "=";
         }
         this.driver.where(first,operator,second);
+        return this;
+    }
+    orWhere(w:(builder :Builder)=>void):Builder;
+    orWhere(key: string,value:any) :Builder;
+    /**
+     * Where implementation.
+     * @param {string} key - Column Name
+     * @param {string} operator - Operator 
+     * @param {any} value - value
+     */
+    orWhere(key:string,operator:string,value:any) : Builder;
+    orWhere(first:any,operator?:string,second?:any): Builder{
+        if(typeof first == "function"){
+            this.baseBuilder.clear();
+            first(new Builder(this.baseBuilder));
+            let inner = this.baseBuilder.getWhere();
+            this.driver.addInnerOrWhere(inner);
+            return this;
+        }
+        if(second==undefined){
+            second = operator;
+            operator = "=";
+        }
+        this.driver.orWhere(first,operator,second);
         return this;
     }
 

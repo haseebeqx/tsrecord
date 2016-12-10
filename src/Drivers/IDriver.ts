@@ -67,18 +67,47 @@ export interface IDriver
 
     /**
      * Where Part of an Expression
-     * @param {string} first - first parameter
+     * @param {string} column - first parameter
      * @param {string} operator - Operator used in Where
-     * @param {any} second - Second Parameter
+     * @param {any} value - Second Parameter
      */
-    where(first :string,operator :string,second:any);
+    where(column :string,operator :string,value:any);
 
     /**
-     * Limit Number Of columns from and to
+     * Where Part of an Expression joined by Or.
+     * @param {string} column - first parameter
+     * @param {string} operator - Operator used in Where
+     * @param {any} value - Second Parameter
+     */
+    orWhere(column: string,operator:string,value :any);
+
+    /**
+     * Limit Number Of columns returned
      * @param {number} offset -offset
      * @param {number} count -Number Of rows to return
      */
     limit(offset:number,count:number);
+
+    /**
+     * Add InnerWhere Part 
+     * @param {string} where - The Where Part.
+     * @param {array} args - the arguments for where part
+     */
+    addInnerWhere(where :InnerWhere);
+
+    /**
+     * Add Inner OrWhere Part
+     */
+    addInnerOrWhere(where :InnerWhere);
+    /**
+     * Get Where Part only.
+     * for using as innerwhere
+     */
+    getWhere():InnerWhere;
+    /**
+     * Clear Driver
+     */
+    clear();
 }
 
 /**
@@ -87,4 +116,9 @@ export interface IDriver
 export interface IQueryResult{
     rows :any[];
     fields :any;
+}
+
+export interface InnerWhere{
+    where :string;
+    args :any[];
 }

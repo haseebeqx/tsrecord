@@ -1,5 +1,5 @@
 
-import {IDriver,IQueryResult} from "./IDriver";
+import {IDriver,IQueryResult,InnerWhere} from "./IDriver";
 import * as mysql from "mysql";
 
 /**
@@ -29,6 +29,13 @@ export class Mysql implements IDriver{
         this.limitStatement = false;
     }
 
+    clear(){
+        this.elements = [];
+        this.whereArgs = [];
+        this.elementPlaceHolder=[];
+        this.wherePart = "";
+        this.limitStatement = false;
+    }
     /**
      * Returns "MYSQL"
      */
@@ -180,5 +187,47 @@ export class Mysql implements IDriver{
         this.limitStatement = true;
         this.limitOffset = from;
         this.limitCount = to;
+    }
+
+    /**
+     * Where Part of an Expression joined by Or.
+     * @param {string} column - first parameter
+     * @param {string} operator - Operator used in Where
+     * @param {any} value - Second Parameter
+     */
+    orWhere(column: string,operator:string,value :any){
+        if(this.wherePart!=""){
+            this.wherePart += " OR ";
+        }
+        this.wherePart  += "?? "+operator+" ?";
+        this.whereArgs.push(column,value);
+    }
+
+    getWhere():InnerWhere{
+        return <InnerWhere>{
+            where:this.wherePart,
+            args:this.whereArgs
+        };
+    }
+
+    /**
+     * Add InnerWhere Part 
+     * @param {string} where - The Where Part.
+     * @param {array} args - the arguments for where part
+     */
+    addInnerWhere(where :InnerWhere){
+        if(this.wherePart!=""){
+            this.wherePart += " AND ";
+        }
+        this.wherePart +=" ( " +where.where+" ) ";
+        this.whereArgs = this.whereArgs.concat(where.args);
+    }
+
+    addInnerOrWhere(where :InnerWhere){
+        if(this.wherePart!=""){
+            this.wherePart += " OR ";
+        }
+        this.wherePart +=" ( " +where.where+" ) ";
+        this.whereArgs = this.whereArgs.concat(where.args);
     }
 }
