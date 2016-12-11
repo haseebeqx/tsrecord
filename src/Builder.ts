@@ -171,7 +171,11 @@ export class Builder{
         this.driver.orderBy(column,order);
         return this;
     }
-
+    
+    /**
+     * Insert data.
+     * @param {...Object} obj
+     */
     insert(obj :Object,...objs:Object[]){
         if(obj==undefined){
             return this.driver.insert(obj)
@@ -180,6 +184,13 @@ export class Builder{
         }
     }
 
+    /**
+     * Update a Record
+     * @param {Object} obj 
+     */
+    update(obj :Object){
+        return this.driver.update(obj);
+    }
     /**
      * Sets The Driver using Object
      * @return {Builder}

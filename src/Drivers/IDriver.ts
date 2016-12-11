@@ -123,6 +123,12 @@ export interface IDriver
      * Insert statement
      */
     insert(obj :Object,...objs:Object[]);
+
+    /**
+     * Update a Record
+     * @param {Object}
+     */
+    update(obj :Object);
 }
 
 /**

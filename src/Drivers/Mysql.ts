@@ -172,7 +172,6 @@ export class Mysql implements IDriver{
         }
         throw new Error("UnSuported Operation");
     }
-
     /**
      * Generates a Select Statement.
      * @return {string} Sql Query
@@ -257,6 +256,25 @@ export class Mysql implements IDriver{
     orderBy(column:string,order :string){
         this.orderByString.push(" ?? "+order);
         this.orderByArgs.push(column);
+    }
+
+    /**
+     * Do an Update Action
+     */
+    update(obj :Object){
+        this.connection.connect();
+        let update = "UPDATE "+this.connection.escapeId(this.tableName)+" SET ?";
+        let where = this.getWhere();
+        if(where.args.length>0){
+            update+= " WHERE "+where.where;
+        }
+        return this.connection.query(update,[obj].concat(where.args),(err,result)=>{
+            if(err){
+                throw err;
+            }
+            this.connection.end();
+            return result;
+        });    
     }
 
     /**
