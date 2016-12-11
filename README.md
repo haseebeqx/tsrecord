@@ -1,2 +1,2 @@
-# TsRecord
+# tsrecord
 ActiveRecord implementation using Typescript
