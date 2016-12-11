@@ -151,7 +151,18 @@ export class Builder{
         this.driver.orWhere(first,operator,second);
         return this;
     }
+
+    /**
+     * Basic Order BY 
+     * @param {string} column
+     */
     orderBy(column :string);
+
+    /**
+     * Order BY With option to specify ASC or DESC
+     * @param {string} column
+     * @param {string} order
+     */
     orderBy(column :string,order :string);
     orderBy(column :string,order? :string) :Builder{
         if(order == undefined){
@@ -161,9 +172,17 @@ export class Builder{
         return this;
     }
 
+    insert(obj :Object,...objs:Object[]){
+        if(obj==undefined){
+            this.driver.insert(obj)
+        }else{
+            this.driver.insert(obj,...objs);
+        }
+    }
+
     /**
      * Sets The Driver using Object
-     * @return Builder
+     * @return {Builder}
      */
     setDriver(driver ) :Builder
     {

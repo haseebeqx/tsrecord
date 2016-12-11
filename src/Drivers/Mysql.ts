@@ -175,7 +175,7 @@ export class Mysql implements IDriver{
      * @return {string} Sql Query
      */
     private generateSelect():string{
-        let select= this.operation+" "+this.getElementsString()+" FROM "+this.tableName;
+        let select= this.operation+" "+this.getElementsString()+" FROM "+this.connection.escapeId(this.tableName);
         if(this.wherePart.length>0){
             select+=" WHERE "+this.wherePart;
         }
@@ -254,5 +254,43 @@ export class Mysql implements IDriver{
     orderBy(column:string,order :string){
         this.orderByString.push(" ?? "+order);
         this.orderByArgs.push(column);
+    }
+
+    insert(obj :Object,...objs:Object[]){
+        this.connection.connect();
+        this.connection.beginTransaction((err) =>{
+            if (err) { throw err; }
+            let table = this.connection.escapeId(this.tableName);
+            this.connection.query("INSERT INTO "+table+" SET ?",obj,(err,result)=>{
+                 if (err) {
+                    return this.connection.rollback(function() {
+                    throw err;
+                 });
+                }
+            });
+            if(objs!=undefined){
+                for(let i=0;i<objs.length;i++){
+                    this.connection.query("INSERT INTO "+table+" SET ?",objs[i],(err,result)=>{
+                        if (err) {
+                            return this.connection.rollback(function() {
+                                throw err;
+                            });
+                        }
+                    });
+                    if(i==objs.length-1){
+                        
+                    }
+                }
+            }
+            this.connection.commit((err)=> {
+                if (err) {
+                    return this.connection.rollback(function() {
+                        throw err;
+                    });
+                }
+            });
+            this.connection.end();
+        });
+        
     }
 }

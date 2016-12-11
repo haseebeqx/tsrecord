@@ -118,6 +118,11 @@ export interface IDriver
      * @param {string} order -ASC or DESC
      */
     orderBy(column:string,order :string);
+
+    /**
+     * Insert statement
+     */
+    insert(obj :Object,...objs:Object[]);
 }
 
 /**
