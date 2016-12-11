@@ -19,7 +19,8 @@ export class Mysql implements IDriver{
     private limitStatement :boolean;
     private limitOffset :number;
     private limitCount :number;
-
+    private orderByString :string[];
+    private orderByArgs :string[];
 
     constructor(){
         this.elements = [];
@@ -27,6 +28,8 @@ export class Mysql implements IDriver{
         this.elementPlaceHolder=[];
         this.wherePart = "";
         this.limitStatement = false;
+        this.orderByString = [];
+        this.orderByArgs =[];
     }
 
     clear(){
@@ -35,6 +38,8 @@ export class Mysql implements IDriver{
         this.elementPlaceHolder=[];
         this.wherePart = "";
         this.limitStatement = false;
+        this.orderByString = [];
+        this.orderByArgs = [];
     }
     /**
      * Returns "MYSQL"
@@ -170,11 +175,18 @@ export class Mysql implements IDriver{
      * @return {string} Sql Query
      */
     private generateSelect():string{
-        let select= this.operation+" "+this.getElementsString()+" FROM "+this.tableName+" WHERE "+this.wherePart;
+        let select= this.operation+" "+this.getElementsString()+" FROM "+this.tableName;
+        if(this.wherePart.length>0){
+            select+=" WHERE "+this.wherePart;
+        }
         if(this.limitStatement){
             select += "LIMIT "+this.limitOffset+" , "+this.limitCount;
         }
         this.args = this.elements.concat(this.whereArgs);
+        if(this.orderByString.length>0){
+            select += " ORDER BY"+this.orderByString.join(",");
+            this.args = this.args.concat(this.orderByArgs);
+        }
         return select;
     }
 
@@ -203,6 +215,9 @@ export class Mysql implements IDriver{
         this.whereArgs.push(column,value);
     }
 
+    /**
+     * Return WherePart
+     */
     getWhere():InnerWhere{
         return <InnerWhere>{
             where:this.wherePart,
@@ -223,11 +238,21 @@ export class Mysql implements IDriver{
         this.whereArgs = this.whereArgs.concat(where.args);
     }
 
+    /**
+     * Add InnerOrWhere Part 
+     * @param {string} where - The Where Part.
+     * @param {array} args - the arguments for where part
+     */
     addInnerOrWhere(where :InnerWhere){
         if(this.wherePart!=""){
             this.wherePart += " OR ";
         }
         this.wherePart +=" ( " +where.where+" ) ";
         this.whereArgs = this.whereArgs.concat(where.args);
+    }
+
+    orderBy(column:string,order :string){
+        this.orderByString.push(" ?? "+order);
+        this.orderByArgs.push(column);
     }
 }

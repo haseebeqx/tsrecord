@@ -20,6 +20,7 @@ export interface IDriver
      * Get Name Of the Driver
      */
     getName():string;
+    
 
     /**
      * Set Column names to Select for select statement
@@ -99,15 +100,24 @@ export interface IDriver
      * Add Inner OrWhere Part
      */
     addInnerOrWhere(where :InnerWhere);
+    
     /**
      * Get Where Part only.
      * for using as innerwhere
      */
     getWhere():InnerWhere;
+    
     /**
      * Clear Driver
      */
     clear();
+    
+    /**
+     * Generate an OrderBy.
+     * @param {string} column -the column name
+     * @param {string} order -ASC or DESC
+     */
+    orderBy(column:string,order :string);
 }
 
 /**

@@ -151,6 +151,15 @@ export class Builder{
         this.driver.orWhere(first,operator,second);
         return this;
     }
+    orderBy(column :string);
+    orderBy(column :string,order :string);
+    orderBy(column :string,order? :string) :Builder{
+        if(order == undefined){
+            order = "ASC";
+        }
+        this.driver.orderBy(column,order);
+        return this;
+    }
 
     /**
      * Sets The Driver using Object
