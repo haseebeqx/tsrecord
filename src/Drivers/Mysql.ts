@@ -21,6 +21,7 @@ export class Mysql implements IDriver{
     private limitCount :number;
     private orderByString :string[];
     private orderByArgs :string[];
+    private results :any[];
 
     constructor(){
         this.elements = [];
@@ -30,6 +31,7 @@ export class Mysql implements IDriver{
         this.limitStatement = false;
         this.orderByString = [];
         this.orderByArgs =[];
+        this.results =[];
     }
 
     clear(){
@@ -40,6 +42,7 @@ export class Mysql implements IDriver{
         this.limitStatement = false;
         this.orderByString = [];
         this.orderByArgs = [];
+        this.results = [];
     }
     /**
      * Returns "MYSQL"
@@ -256,17 +259,23 @@ export class Mysql implements IDriver{
         this.orderByArgs.push(column);
     }
 
+    /**
+     * Insert Data
+     * @param {Object} obj - insert data in object form.
+     * @param {...Object} objs - insert data in object form.
+     */
     insert(obj :Object,...objs:Object[]){
         this.connection.connect();
-        this.connection.beginTransaction((err) =>{
+        return this.connection.beginTransaction((err) =>{
             if (err) { throw err; }
             let table = this.connection.escapeId(this.tableName);
             this.connection.query("INSERT INTO "+table+" SET ?",obj,(err,result)=>{
                  if (err) {
                     return this.connection.rollback(function() {
                     throw err;
-                 });
+                 }); 
                 }
+                this.results.push(result);
             });
             if(objs!=undefined){
                 for(let i=0;i<objs.length;i++){
@@ -276,10 +285,8 @@ export class Mysql implements IDriver{
                                 throw err;
                             });
                         }
+                        this.results.push(result);
                     });
-                    if(i==objs.length-1){
-                        
-                    }
                 }
             }
             this.connection.commit((err)=> {
@@ -288,9 +295,10 @@ export class Mysql implements IDriver{
                         throw err;
                     });
                 }
+                return this.results;
             });
             this.connection.end();
+            return this.results;
         });
-        
     }
 }

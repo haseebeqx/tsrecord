@@ -174,9 +174,9 @@ export class Builder{
 
     insert(obj :Object,...objs:Object[]){
         if(obj==undefined){
-            this.driver.insert(obj)
+            return this.driver.insert(obj)
         }else{
-            this.driver.insert(obj,...objs);
+            return this.driver.insert(obj,...objs);
         }
     }
 
