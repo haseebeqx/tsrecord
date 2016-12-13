@@ -2,6 +2,7 @@
 /**
  * Sql Driver Interface
  */
+
 export interface IDriver
 {
     /**
