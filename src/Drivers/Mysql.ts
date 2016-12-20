@@ -1,5 +1,5 @@
 
-import {IDriver,IQueryResult} from "./IDriver";
+import {IDriver,IQueryResult,InnerWhere} from "./IDriver";
 import * as mysql from "mysql";
 
 /**
@@ -19,7 +19,9 @@ export class Mysql implements IDriver{
     private limitStatement :boolean;
     private limitOffset :number;
     private limitCount :number;
-
+    private orderByString :string[];
+    private orderByArgs :string[];
+    private results :any[];
 
     constructor(){
         this.elements = [];
@@ -27,8 +29,21 @@ export class Mysql implements IDriver{
         this.elementPlaceHolder=[];
         this.wherePart = "";
         this.limitStatement = false;
+        this.orderByString = [];
+        this.orderByArgs =[];
+        this.results =[];
     }
 
+    clear(){
+        this.elements = [];
+        this.whereArgs = [];
+        this.elementPlaceHolder=[];
+        this.wherePart = "";
+        this.limitStatement = false;
+        this.orderByString = [];
+        this.orderByArgs = [];
+        this.results = [];
+    }
     /**
      * Returns "MYSQL"
      */
@@ -157,17 +172,23 @@ export class Mysql implements IDriver{
         }
         throw new Error("UnSuported Operation");
     }
-
     /**
      * Generates a Select Statement.
      * @return {string} Sql Query
      */
     private generateSelect():string{
-        let select= this.operation+" "+this.getElementsString()+" FROM "+this.tableName+" WHERE "+this.wherePart;
+        let select= this.operation+" "+this.getElementsString()+" FROM "+this.connection.escapeId(this.tableName);
+        if(this.wherePart.length>0){
+            select+=" WHERE "+this.wherePart;
+        }
         if(this.limitStatement){
             select += "LIMIT "+this.limitOffset+" , "+this.limitCount;
         }
         this.args = this.elements.concat(this.whereArgs);
+        if(this.orderByString.length>0){
+            select += " ORDER BY"+this.orderByString.join(",");
+            this.args = this.args.concat(this.orderByArgs);
+        }
         return select;
     }
 
@@ -180,5 +201,122 @@ export class Mysql implements IDriver{
         this.limitStatement = true;
         this.limitOffset = from;
         this.limitCount = to;
+    }
+
+    /**
+     * Where Part of an Expression joined by Or.
+     * @param {string} column - first parameter
+     * @param {string} operator - Operator used in Where
+     * @param {any} value - Second Parameter
+     */
+    orWhere(column: string,operator:string,value :any){
+        if(this.wherePart!=""){
+            this.wherePart += " OR ";
+        }
+        this.wherePart  += "?? "+operator+" ?";
+        this.whereArgs.push(column,value);
+    }
+
+    /**
+     * Return WherePart
+     */
+    getWhere():InnerWhere{
+        return <InnerWhere>{
+            where:this.wherePart,
+            args:this.whereArgs
+        };
+    }
+
+    /**
+     * Add InnerWhere Part 
+     * @param {string} where - The Where Part.
+     * @param {array} args - the arguments for where part
+     */
+    addInnerWhere(where :InnerWhere){
+        if(this.wherePart!=""){
+            this.wherePart += " AND ";
+        }
+        this.wherePart +=" ( " +where.where+" ) ";
+        this.whereArgs = this.whereArgs.concat(where.args);
+    }
+
+    /**
+     * Add InnerOrWhere Part 
+     * @param {string} where - The Where Part.
+     * @param {array} args - the arguments for where part
+     */
+    addInnerOrWhere(where :InnerWhere){
+        if(this.wherePart!=""){
+            this.wherePart += " OR ";
+        }
+        this.wherePart +=" ( " +where.where+" ) ";
+        this.whereArgs = this.whereArgs.concat(where.args);
+    }
+
+    orderBy(column:string,order :string){
+        this.orderByString.push(" ?? "+order);
+        this.orderByArgs.push(column);
+    }
+
+    /**
+     * Do an Update Action
+     */
+    update(obj :Object){
+        this.connection.connect();
+        let update = "UPDATE "+this.connection.escapeId(this.tableName)+" SET ?";
+        let where = this.getWhere();
+        if(where.args.length>0){
+            update+= " WHERE "+where.where;
+        }
+        return this.connection.query(update,[obj].concat(where.args),(err,result)=>{
+            if(err){
+                throw err;
+            }
+            this.connection.end();
+            return result;
+        });    
+    }
+
+    /**
+     * Insert Data
+     * @param {Object} obj - insert data in object form.
+     * @param {...Object} objs - insert data in object form.
+     */
+    insert(obj :Object,...objs:Object[]){
+        this.connection.connect();
+        return this.connection.beginTransaction((err) =>{
+            if (err) { throw err; }
+            let table = this.connection.escapeId(this.tableName);
+            this.connection.query("INSERT INTO "+table+" SET ?",obj,(err,result)=>{
+                 if (err) {
+                    return this.connection.rollback(function() {
+                    throw err;
+                 }); 
+                }
+                this.results.push(result);
+            });
+            if(objs!=undefined){
+                for(let i=0;i<objs.length;i++){
+                    this.connection.query("INSERT INTO "+table+" SET ?",objs[i],(err,result)=>{
+                        if (err) {
+                            return this.connection.rollback(function() {
+                                throw err;
+                            });
+                        }
+                        this.results.push(result);
+                    });
+                }
+            }
+            this.connection.commit((err)=> {
+                if (err) {
+                    return this.connection.rollback(function() {
+                        throw err;
+                    });
+                }
+                return this.results;
+            });
+            this.connection.end();
+            return this.results;
+        });
     }
 }
