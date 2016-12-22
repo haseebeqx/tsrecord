@@ -62,6 +62,11 @@ export interface IDriver
     select();
 
     /**
+     * Perform a delete operation.
+     */
+    delete();
+
+    /**
      * Execute a Query
      * @param {function} callback - callback function to run when execution is success
      */
