@@ -185,11 +185,18 @@ export class Builder{
     }
 
     /**
-     * Update a Record
+     * Update Records
      * @param {Object} obj 
      */
     update(obj :Object){
         return this.driver.update(obj);
+    }
+
+    /** 
+     * Delete Records
+     */
+    delete(){
+        return this.driver.delete();
     }
     /**
      * Sets The Driver using Object

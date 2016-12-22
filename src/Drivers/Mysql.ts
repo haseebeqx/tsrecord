@@ -123,6 +123,21 @@ export class Mysql implements IDriver{
     }
 
     /**
+     * Specify the operation is a Delete
+     */
+    delete(){
+         this.connection.connect();
+         var del = this.generateDelete();
+         let where = this.getWhere();
+         return this.connection.query(del,where.args,(err,result)=>{
+            if(err){
+                throw err;
+            }
+            this.connection.end();
+            return result;
+        });
+    }
+    /**
      * Execute a Mysql Query
      * @param {function} callback - callback function to run when execution is success
      */
@@ -190,6 +205,14 @@ export class Mysql implements IDriver{
             this.args = this.args.concat(this.orderByArgs);
         }
         return select;
+    }
+
+    private generateDelete():string{
+        let del = " DELETE FROM "+this.connection.escapeId(this.tableName);
+        if(this.wherePart.length>0){
+            del += " WHERE "+this.wherePart;
+        }
+        return del;
     }
 
     /**
