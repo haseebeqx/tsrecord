@@ -62,10 +62,22 @@ a.all(
     }
 );
 // or a.all(function(flight :Flight){...})
-// but the former format will preserve 'this' from current class
+// but the former format will preserve 'this' from current class context
 ```
 
 also if you don't want adavatages of adding `:Flight[]` you can use `:any`
 
 here we get data to the callback function inside `all` method as an array of `Flight` object.
 
+### Read One Record
+
+```typescript
+var a = new Flight();
+a.all(
+    (flight :Flight)=>{
+        console.log(flight.name); //Air india
+        console.log(flight.route_from) //india
+        console.log(flight.route_to) //Singapore
+    }
+);
+```

@@ -14,7 +14,7 @@ export class Model implements IModel{
         return result;
     }
 
-     all(callback:(model :  IModel[])=>void){
+    all(callback:(model :  IModel[])=>void){
         let helper = new Helper();
         let columns = helper.getParams(this);
         let table = helper.getTableName(this);
@@ -29,6 +29,21 @@ export class Model implements IModel{
                 }
             }
             callback(retArray);
+        });
+    }
+
+    first(callback:(model :IModel)=>void){
+        let helper = new Helper();
+        let columns = helper.getParams(this);
+        let table = helper.getTableName(this);
+        let builder = new Builder();
+        builder.table(table).getOne((result)=>{
+            var ret = Object.create(this);
+            if(result.rows.length>0)
+            for(let j in result.rows[0]){
+                ret[j]= result.rows[0][j];
+            }
+            callback(ret);
         });
     }
 }
