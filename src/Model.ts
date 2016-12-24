@@ -23,11 +23,10 @@ export class Model implements IModel{
             let retArray = [];
             
             for(let i=0;i<result.rows.length;i++){
-                let instance = this.constructor();
+                retArray[i]= Object.create( this);
                 for(let j in result.rows[i]){
-                    instance[j] = result.rows[i][j];
+                    retArray[i][j] = result.rows[i][j];
                 }
-                retArray.push(instance);
             }
             callback(retArray);
         });
