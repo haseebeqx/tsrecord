@@ -26,6 +26,16 @@ class Flight extends Model{
     public route_to :string;
 }
 ```
+
+or if you dont want the advatages of adding field names
+
+```typescript
+Class Flight {
+
+}
+
+```
+
 now we can use this class for accessing the table
 
 ### Basic Create Operation
@@ -54,6 +64,8 @@ a.all(
 // or a.all(function(flight :Flight){...})
 // but the former format will preserve 'this' from current class
 ```
+
+also if you don't want adavatages of adding `:Flight[]` you can use `:any`
 
 here we get data to the callback function inside `all` method as an array of `Flight` object.
 
