@@ -6,6 +6,9 @@ ActiveRecord implementation using Typescript
 1. table name is plural it's corresponding class name should be its singular. for example the class `Flight` is equivalent to the table `flights`
 2. table name should be in lower case snake_case and its corresponding class name should be in CamelCase. example: `person_names` table will have equivalent class `PersonName`
 
+### table structure
+1. it assumes each table has a primary key with the name `id` 
+
 # Example
 ### Basic Table Mapping
 example for table `flights`
