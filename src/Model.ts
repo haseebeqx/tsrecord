@@ -1,25 +1,33 @@
 import {Builder} from "./Builder";
 import {Helper} from "./Helper";
 export class Model implements IModel{
+    private builder :Builder;
+    private columns;
+    protected tableName;
+
     save(){
-        let helper = new Helper();
-        let columns = helper.getParams(this);
-        let table = helper.getTableName(this);
-        let insert :Object = {};
-        for(let i = 0;i<columns.length;i++){
-            insert[columns[i]]=this[columns[i]];
+        if(this.builder==undefined){
+            let helper = new Helper();
+            this.columns = helper.getParams(this);
+            this.tableName = helper.getTableName(this);
+            this.builder = new Builder();
         }
-        let builder = new Builder();
-        var result = builder.table(table).insert(insert);
+        let insert :Object = {};
+        for(let i = 0;i<this.columns.length;i++){
+            insert[this.columns[i]]=this[this.columns[i]];
+        }
+        
+        var result = this.builder.table(this.tableName).insert(insert);
         return result;
     }
 
     all(callback:(model :  IModel[])=>void){
-        let helper = new Helper();
-        let columns = helper.getParams(this);
-        let table = helper.getTableName(this);
-        let builder = new Builder();
-        builder.table(table).getAll((result)=>{
+        if(this.builder==undefined){
+            let helper = new Helper();
+            this.tableName = helper.getTableName(this);
+            this.builder = new Builder();
+        }
+        this.builder.table(this.tableName).getAll((result)=>{
             let retArray = [];
             
             for(let i=0;i<result.rows.length;i++){
@@ -33,11 +41,12 @@ export class Model implements IModel{
     }
 
     first(callback:(model :IModel)=>void){
-        let helper = new Helper();
-        let columns = helper.getParams(this);
-        let table = helper.getTableName(this);
-        let builder = new Builder();
-        builder.table(table).getOne((result)=>{
+        if(this.builder==undefined){
+            let helper = new Helper();
+            this.tableName = helper.getTableName(this);
+            this.builder = new Builder();
+        }
+        this.builder.table(this.tableName).getOne((result)=>{
             var ret = Object.create(this);
             if(result.rows.length>0)
             for(let j in result.rows[0]){
@@ -46,6 +55,35 @@ export class Model implements IModel{
             callback(ret);
         });
     }
+    where(w:(builder :Builder)=>void):Model;
+    where(key: string,value:any) :Model;
+    where(key:string,operator:string,value:any):Model
+    where(...args):Model{
+        if(this.builder==undefined){
+            let helper = new Helper();
+            this.columns = helper.getParams(this);
+            this.tableName = helper.getTableName(this);
+            this.builder = new Builder();
+        }
+        this.builder.where(arguments[0],arguments[1],arguments[2]);
+        return this;
+    }
+
+    orWhere(w:(builder :Builder)=>void):Model;
+    orWhere(key: string,value:any) :Model;
+    orWhere(key:string,operator:string,value:any):Model
+    orWhere(...args):Model{
+        if(this.builder==undefined){
+            let helper = new Helper();
+            this.columns = helper.getParams(this);
+            this.tableName = helper.getTableName(this);
+            this.builder = new Builder();
+        }
+        this.builder.orWhere(arguments[0],arguments[1],arguments[2]);
+        return this;
+    }
+
+
 }
 
 export interface IModel{
