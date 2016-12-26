@@ -100,7 +100,7 @@ flight.where("id","2").delete();
 ```typescript
 
 var a = new Flight();
-a..where("id","1").first(
+a.where("id","1").first(
     (flight :Flight)=>{
         flight.name = "Air Asia"
         flight.route_from = "Shanghai" 
