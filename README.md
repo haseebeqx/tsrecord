@@ -84,3 +84,28 @@ a.all(
     }
 );
 ```
+
+### Basic Delete Operation
+
+```typescript
+
+var flight = new Flight();
+flight.where("id","2").delete();
+
+```
+
+
+### Basic Update Operation
+
+```typescript
+
+var a = new Flight();
+a..where("id","1").first(
+    (flight :Flight)=>{
+        flight.name = "Air Asia"
+        flight.route_from = "Shanghai" 
+        flight.save();
+    }
+);
+
+```
