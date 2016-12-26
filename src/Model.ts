@@ -6,24 +6,31 @@ export class Model implements IModel{
     protected tableName;
 
     save(){
-        if(this.builder==undefined){
-            let helper = new Helper();
-            this.columns = helper.getParams(this);
-            this.tableName = helper.getTableName(this);
-            this.builder = new Builder();
+        let helper = new Helper();
+        this.columns = helper.getParams(this);
+        this.tableName = helper.getTableName(this);
+        var operation = "I";//insert
+        if(this.builder!=undefined){
+            operation="U";
         }
+        this.builder = new Builder();
         let insert :Object = {};
         for(let i = 0;i<this.columns.length;i++){
             insert[this.columns[i]]=this[this.columns[i]];
         }
-        
-        var result = this.builder.table(this.tableName).insert(insert);
+        var result;
+        if(operation=="U"){
+            result =this.builder.table(this.tableName).where("id",insert["id"]).update(insert);
+        }else{
+            result = this.builder.table(this.tableName).insert(insert);
+        }
         return result;
     }
 
     all(callback:(model :  IModel[])=>void){
         if(this.builder==undefined){
             let helper = new Helper();
+            this.columns = helper.getParams(this);
             this.tableName = helper.getTableName(this);
             this.builder = new Builder();
         }
@@ -43,6 +50,7 @@ export class Model implements IModel{
     first(callback:(model :IModel)=>void){
         if(this.builder==undefined){
             let helper = new Helper();
+            this.columns = helper.getParams(this);
             this.tableName = helper.getTableName(this);
             this.builder = new Builder();
         }
@@ -62,6 +70,7 @@ export class Model implements IModel{
     where(...args):Model{
         if(this.builder==undefined){
             let helper = new Helper();
+            this.columns = helper.getParams(this);
             this.tableName = helper.getTableName(this);
             this.builder = new Builder();
         }
@@ -75,6 +84,7 @@ export class Model implements IModel{
     orWhere(...args):Model{
         if(this.builder==undefined){
             let helper = new Helper();
+            this.columns = helper.getParams(this);
             this.tableName = helper.getTableName(this);
             this.builder = new Builder();
         }
