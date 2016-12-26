@@ -76,7 +76,7 @@ here we get data to the callback function inside `all` method as an array of `Fl
 
 ```typescript
 var a = new Flight();
-a.all(
+a.first(
     (flight :Flight)=>{
         console.log(flight.name); //Air india
         console.log(flight.route_from) //india
