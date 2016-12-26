@@ -55,13 +55,13 @@ export class Model implements IModel{
             callback(ret);
         });
     }
+    
     where(w:(builder :Builder)=>void):Model;
     where(key: string,value:any) :Model;
     where(key:string,operator:string,value:any):Model
     where(...args):Model{
         if(this.builder==undefined){
             let helper = new Helper();
-            this.columns = helper.getParams(this);
             this.tableName = helper.getTableName(this);
             this.builder = new Builder();
         }
@@ -75,12 +75,19 @@ export class Model implements IModel{
     orWhere(...args):Model{
         if(this.builder==undefined){
             let helper = new Helper();
-            this.columns = helper.getParams(this);
             this.tableName = helper.getTableName(this);
             this.builder = new Builder();
         }
         this.builder.orWhere(arguments[0],arguments[1],arguments[2]);
         return this;
+    }
+    delete(){
+        if(this.builder==undefined){
+            let helper = new Helper();
+            this.tableName = helper.getTableName(this);
+            this.builder = new Builder();
+        }
+        this.builder.table(this.tableName).delete();
     }
 
 
