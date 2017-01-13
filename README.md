@@ -122,8 +122,8 @@ You can use ``@TableOverride`` decorator for overriding tablename or key.
 class random extends Model{
     public id :number;
     public name :string;
-    public subname :string;
-    public midname :string;
+    public route_from :string;
+    public route_to :string;
 }
 
 ```
