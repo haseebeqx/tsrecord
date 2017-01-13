@@ -109,3 +109,21 @@ a.where("id","1").first(
 );
 
 ```
+
+### Overriding Table Name or key
+
+You can use ``@TableOverride`` decorator for overriding tablename or key.
+
+```ts
+
+@TableOverride({
+    tableName:"flights"
+})
+class random extends Model{
+    public id :number;
+    public name :string;
+    public subname :string;
+    public midname :string;
+}
+
+```

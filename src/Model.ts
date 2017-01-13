@@ -4,11 +4,17 @@ export class Model implements IModel{
     private builder :Builder;
     private columns;
     protected tableName;
+    protected key;
 
     save(){
         let helper = new Helper();
         this.columns = helper.getParams(this);
-        this.tableName = helper.getTableName(this);
+        if(this.key==undefined){
+            this.key = "id";
+        }
+        if(this.tableName==undefined){
+            this.tableName = helper.getTableName(this);
+        }
         var operation = "I";//insert
         if(this.builder!=undefined){
             operation="U";
@@ -20,7 +26,7 @@ export class Model implements IModel{
         }
         var result;
         if(operation=="U"){
-            result =this.builder.table(this.tableName).where("id",insert["id"]).update(insert);
+            result =this.builder.table(this.tableName).where(this.key,insert[this.key]).update(insert);
         }else{
             result = this.builder.table(this.tableName).insert(insert);
         }
@@ -31,7 +37,9 @@ export class Model implements IModel{
         if(this.builder==undefined){
             let helper = new Helper();
             this.columns = helper.getParams(this);
-            this.tableName = helper.getTableName(this);
+            if(this.tableName==undefined){
+                this.tableName = helper.getTableName(this);
+            }
             this.builder = new Builder();
         }
         this.builder.table(this.tableName).getAll((result)=>{
@@ -51,7 +59,9 @@ export class Model implements IModel{
         if(this.builder==undefined){
             let helper = new Helper();
             this.columns = helper.getParams(this);
-            this.tableName = helper.getTableName(this);
+            if(this.tableName==undefined){
+                this.tableName = helper.getTableName(this);
+            }
             this.builder = new Builder();
         }
         this.builder.table(this.tableName).getOne((result)=>{
@@ -71,7 +81,9 @@ export class Model implements IModel{
         if(this.builder==undefined){
             let helper = new Helper();
             this.columns = helper.getParams(this);
-            this.tableName = helper.getTableName(this);
+            if(this.tableName==undefined){
+                this.tableName = helper.getTableName(this);
+            }
             this.builder = new Builder();
         }
         this.builder.where(arguments[0],arguments[1],arguments[2]);
@@ -85,7 +97,9 @@ export class Model implements IModel{
         if(this.builder==undefined){
             let helper = new Helper();
             this.columns = helper.getParams(this);
-            this.tableName = helper.getTableName(this);
+            if(this.tableName==undefined){
+                this.tableName = helper.getTableName(this);
+            }
             this.builder = new Builder();
         }
         this.builder.orWhere(arguments[0],arguments[1],arguments[2]);
@@ -94,7 +108,9 @@ export class Model implements IModel{
     delete(){
         if(this.builder==undefined){
             let helper = new Helper();
-            this.tableName = helper.getTableName(this);
+            if(this.tableName==undefined){
+                this.tableName = helper.getTableName(this);
+            }
             this.builder = new Builder();
         }
         this.builder.table(this.tableName).delete();
