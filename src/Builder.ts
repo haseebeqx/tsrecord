@@ -5,6 +5,7 @@ import {Config} from "./Config";
 /**
  * Query Builder class
  */
+
 export class Builder{
 
     private driver :IDriver;
@@ -52,7 +53,7 @@ export class Builder{
      * @param {string} column -First Column.
      * @param {string[]} columns -Rest of the columns
      */
-    take(column :string,...columns :string[]){
+    columns(column :string,...columns :string[]){
         let elements :Array<string>= [column];
         if(columns!=undefined){
             this.driver.setElements(elements.concat(columns));
@@ -95,6 +96,16 @@ export class Builder{
         this.driver.select();
         this.driver.limit(0,1);
         this.driver.execute(callback);
+    }
+
+    /**
+     * Get Count Of Results
+     */
+    count(callback:(result :number)=>void){
+        this.driver.count(function(result){
+            var count = result.rows[0]['count'];
+            callback(count);
+        });
     }
 
     where(w:(builder :Builder)=>void):Builder;

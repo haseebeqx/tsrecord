@@ -62,6 +62,10 @@ export interface IDriver
     select();
 
     /**
+     * Get the count of results
+     */
+    count(callback:(result :IQueryResult)=>void);
+    /**
      * Perform a delete operation.
      */
     delete();

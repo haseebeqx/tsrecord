@@ -60,8 +60,8 @@ you can perform Database Read in the Following Format
 ```typescript
 var a = new Flight();
 a.all(
-    (flight :Flight[])=>{
-        console.log(flight);
+    (flights :Flight[])=>{
+        console.log(flights);
     }
 );
 // or a.all(function(flight :Flight){...})

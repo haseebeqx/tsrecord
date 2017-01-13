@@ -119,7 +119,11 @@ export class Mysql implements IDriver{
      */
     select(){
         this.operation = "SELECT";
-        
+    }
+
+    count(callBack :(result :IQueryResult)=>void){
+        this.operation = "COUNT";
+        this.execute(callBack);
     }
 
     /**
@@ -184,6 +188,8 @@ export class Mysql implements IDriver{
     private generateStatement():string{
         if(this.operation=="SELECT"){
             return this.generateSelect();
+        }else if(this.operation=="COUNT"){
+            return this.generateCount();
         }
         throw new Error("UnSuported Operation");
     }
@@ -207,6 +213,24 @@ export class Mysql implements IDriver{
         return select;
     }
 
+    /**
+     * generate sql count query
+     */
+    private generateCount():string{
+        if(this.elements.length>1){
+            throw new Error("Only One Element can be counted at a time");
+        }
+        let select= "SELECT COUNT( "+this.getElementsString()+") as count FROM "+this.connection.escapeId(this.tableName);
+        if(this.wherePart.length>0){
+            select+=" WHERE "+this.wherePart;
+        }
+        this.args = this.elements.concat(this.whereArgs);
+        return select;
+    }
+
+    /**
+     * Generates a Delete statement
+     */
     private generateDelete():string{
         let del = " DELETE FROM "+this.connection.escapeId(this.tableName);
         if(this.wherePart.length>0){
