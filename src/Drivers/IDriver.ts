@@ -139,6 +139,8 @@ export interface IDriver
      * @param {Object}
      */
     update(obj :Object);
+
+    join(table:string,joinblock :Ijoinblock[]);
 }
 
 /**
@@ -152,4 +154,10 @@ export interface IQueryResult{
 export interface InnerWhere{
     where :string;
     args :any[];
+}
+
+export interface Ijoinblock{
+    first :string,
+    operator:string,
+    second :string
 }

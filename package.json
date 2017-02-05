@@ -1,8 +1,11 @@
 {
   "name": "tsrecord",
-  "version": "1.0.0",
-  "description": "ActiveRecord implementation using Typescript",
-  "main": "index.js",
+  "version": "0.8.0",
+  "description": "ActiveRecord orm implementation using Typescript",
+  "keywords": [
+    "orm","database","mysql","typescript"
+  ],
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,16 +13,15 @@
     "type": "git",
     "url": "git+https://github.com/haseebeqx/TsRecord.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Haseeb A <haseebeqx@yahoo.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/haseebeqx/TsRecord/issues"
   },
   "homepage": "https://github.com/haseebeqx/TsRecord#readme",
   "devDependencies": {
     "@types/node": "0.0.2",
-    "typescript": "^2.1.4"
+    "typescript": "^2.1.5"
   },
   "dependencies": {
     "mysql": "^2.12.0"

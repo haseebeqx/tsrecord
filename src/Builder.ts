@@ -1,4 +1,5 @@
-import {IDriver,IQueryResult} from "./Drivers/IDriver";
+import { Connection } from './Connection';
+import {IDriver,IQueryResult,Ijoinblock} from "./Drivers/IDriver";
 import {DriverConfig} from "./DriverConfig";
 import {Config} from "./Config";
 
@@ -223,4 +224,28 @@ export class Builder{
     {
         return this.driver;
     }
+
+    join(table:string,obj :Array<string>[])
+    join(table:string,first:string,operator:string,second:string)
+    join(table :string,first? :any,second?:any,third?:any):Builder{
+        let obj :Ijoinblock[]=[];
+        if(typeof first == "string"){
+            let obj = [{
+                first: first,
+                operator:second,
+                second:third
+            }];
+        }else{
+            for(let i=0;i<first.length;i++){
+                obj.push({
+                    first: first[i][0],
+                    operator: first[i][1],
+                    second:first[i][2]
+                });
+            }
+        }
+        this.driver.join(table,obj);
+        return this;
+    }
 }
+

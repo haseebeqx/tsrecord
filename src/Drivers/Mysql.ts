@@ -1,5 +1,5 @@
 
-import {IDriver,IQueryResult,InnerWhere} from "./IDriver";
+import {IDriver,IQueryResult,InnerWhere,Ijoinblock} from "./IDriver";
 import * as mysql from "mysql";
 
 /**
@@ -22,16 +22,21 @@ export class Mysql implements IDriver{
     private orderByString :string[];
     private orderByArgs :string[];
     private results :any[];
+    private hasJoin:boolean;
+    private joinOn :IJoin[];
 
     constructor(){
         this.elements = [];
         this.whereArgs = [];
+        this.args = [];
         this.elementPlaceHolder=[];
         this.wherePart = "";
         this.limitStatement = false;
         this.orderByString = [];
         this.orderByArgs =[];
         this.results =[];
+        this.hasJoin = false;
+        this.joinOn = [];
     }
 
     clear(){
@@ -199,18 +204,36 @@ export class Mysql implements IDriver{
      */
     private generateSelect():string{
         let select= this.operation+" "+this.getElementsString()+" FROM "+this.connection.escapeId(this.tableName);
+        if(this.hasJoin){
+            select += this.generateJoin()
+        }
         if(this.wherePart.length>0){
             select+=" WHERE "+this.wherePart;
         }
         if(this.limitStatement){
-            select += "LIMIT "+this.limitOffset+" , "+this.limitCount;
+            select += " LIMIT "+this.limitOffset+" , "+this.limitCount;
         }
-        this.args = this.elements.concat(this.whereArgs);
+        this.args = this.args.concat(this.elements.concat(this.whereArgs));
         if(this.orderByString.length>0){
-            select += " ORDER BY"+this.orderByString.join(",");
+            select += " ORDER BY "+this.orderByString.join(",");
             this.args = this.args.concat(this.orderByArgs);
         }
         return select;
+    }
+
+    private generateJoin():string{
+        let join = " ";
+        for(let i=0; i< this.joinOn.length;i++){
+            let k = this.joinOn[i];
+            join += "JOIN "+k.table+" ON "
+            this.args = this.args.concat(k.data);
+            for(let j = 0; j < k.data.length; j++){
+                join += "?? " + k.data[j].operator+" ??";
+                if(j == k.data.length -1){
+                    return join;
+                }
+            }
+        }
     }
 
     /**
@@ -366,4 +389,14 @@ export class Mysql implements IDriver{
             return this.results;
         });
     }
+
+    join(table:string,join:Ijoinblock[]){
+        this.hasJoin = true;
+        this.joinOn.push({table:table,data:join});
+    }
+}
+
+interface IJoin{
+    table :string,
+    data :Ijoinblock[]
 }

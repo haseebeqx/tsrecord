@@ -5,6 +5,7 @@
         "noImplicitAny": false,
         "sourceMap": false,
          "outDir": "build",
+         "watch": true,
          "experimentalDecorators": true
     }
 }

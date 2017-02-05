@@ -1,4 +1,4 @@
-class Connection{
+export class Connection{
 
     private static conn :any;
 
