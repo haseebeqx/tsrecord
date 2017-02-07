@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>tsrecord</title>
+
+        <link rel="stylesheet" href="http://haseebeqx.github.io/tsrecord/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://haseebeqx.github.io/tsrecord/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://haseebeqx.github.io/tsrecord/css/highlight.dark.css">
+        <link rel="stylesheet" href="http://haseebeqx.github.io/tsrecord/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="http://haseebeqx.github.io/tsrecord/">
+                tsrecord
+                <small class="hidden-xs hidden-sm">
+                    ActiveRecord ORM For typescript and javascript
+                </small>
+            </a>
+
+                            <a href="https://github.com/haseebeqx/tsrecord">
+                    <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png">
+                </a>
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                        <ul class="nav nav-pills nav-stacked">
+                                                            <li class="">
+                                    <a href="http://haseebeqx.github.io/tsrecord/index.html">
+                                        Home
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://haseebeqx.github.io/tsrecord/#installation">
+                                        installation
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="http://haseebeqx.github.io/tsrecord/#crud">
+                                        Basic Crud Operations
+                                    </a>
+                                </li>
+                                                    </ul>
+
+                    </nav>
+
+                
+                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1 id="tsrecord">tsrecord</h1>
+<p>tsrecord is an active record ORM implementation for typescript and javascript es6 and above. it essentially is a secure way
+for communicating with your database. it abstracts SQL queries under using powerful object oriented system. communicating with
+database is super simple with this tool. you can communicate with database using javasccript. Yes, without using SQL.
+this tutorial uses <code>typescript</code> which helps to achieve some type safety.</p>
+<h3 id="installation-and-configuaration">Installation and Configuaration</h3>
+<p>installation and configuaration is simple</p>
+<pre><code class="language-bash">npm install tsrecord</code></pre>
+<p>this will install it. currently only mysql is supported. it is built in such a way that very easy to add new database using
+files called drivers. </p>
+<p>Now you need to add connection info with database.</p>
+<pre><code class="language-typescript">import {Config} from "tsrecord"
+Config["MYSQL"] = {
+        host     : 'localhost',
+        user     : 'username',
+        database : 'database',
+        password : 'password'
+}</code></pre>
+<p>that's it. it will register our connection details for mysql database. it is not connecting to database, it is just registering
+this details inside tsrecord config. so, you will not get any error messages for now.</p>
+<p><strong>well Installation and Configuaration is done</strong> :)</p>
+<h1 id="basic-crud-operations">Basic CRUD operations.</h1>
+<p>CRUD operations means CREATE, READ, UPDATE and DELETE. Yes, they are same as INSERT, SELECT, UPDATE and DELETE in SQL.
+tsrecord follow active record pattern. it is similar to rails activerecord. here a table is mapped to a class.</p>
+<p>consider you have a table with the name <code>flights</code>. you have to create a class with the name <code>Flights</code>.
+you may wounder why this naming is importent. because there are some naming convenssions here.(ofcource you can override conventions if you want)</p>
+<h3 id="convenssions">convenssions</h3>
+<p>these conventions are for helping you to develop applications really faster. if you don't like it you can <a href="#override">override</a></p>
+<h3 id="table-name">table name</h3>
+<ol>
+<li>table name is plural it's corresponding class name should be its singular. for example the class <code>Flight</code> is equivalent to the table <code>flights</code></li>
+<li>table name should be in lower case snake_case and its corresponding class name should be in CamelCase. example: <code>person_names</code> table will have equivalent class <code>PersonName</code></li>
+</ol>
+<h3 id="table-structure">table structure</h3>
+<ol>
+<li>it assumes each table has a primary key with the name <code>id</code> </li>
+</ol>
+<h3 id="the-model">the model</h3>
+<p>a model is a class mapping to a table in a database. consider you have a table <code>flights</code> with the following structure.</p>
+<pre><code>###  table structure  ###
+id int auto increment
+name varchar(50)
+route_from varchar(100)
+route_to varchar(100)</code></pre>
+<p>you can create class <code>Flight</code> like this.</p>
+<pre><code class="language-typescript">class Flight extends Model{
+    public id :number;
+    public name :string;
+    public route_from :string;
+    public route_to :string;
+}</code></pre>
+<p>guys or girls with rails experience may think why is defining columns as variables needed at all.
+but for typescript  it has its own advantages. if you dont like you can also define like,</p>
+<pre><code class="language-typescript">class Flight extends Model{
+    //yes,its blank compared to previous. but it will work.
+}</code></pre>
+<p>for typescript i always recommend using the first form with all columns in database declared inside the class.</p>
+<h3 id="create-insert">CREATE (insert)</h3>
+<p>for inserting data into <code>flights</code> table we can use <code>save()</code> function from our model. this will convert into equivalent
+<code>INSERT INTO flights...</code> by the model</p>
+<pre><code class="language-typescript">var a = new Flight();
+a.name = "Air india"
+a.route_from = "india";
+a.route_to = "Singapore";
+a.save();</code></pre>
+<h3 id="read-select">READ (select)</h3>
+<p>for getting data we can use methods like <code>all()</code> or <code>first()</code>.  to do something
+with this data you have to pass a callback function to these. and for filtering you have <code>where()</code> also.</p>
+<h4 id="getting-a-single-row-of-data">getting a single row of data</h4>
+<p>to read a single record you have to use <code>first()</code>. we pass a callback function with an object of Flight as parameter. this
+will have the required data.</p>
+<pre><code class="language-typescript">var a = new Flight();
+a.first(
+    (flight :Flight)=&gt;{
+        console.log(flight.name); //Air india
+        console.log(flight.route_from) //india
+        console.log(flight.route_to) //Singapore
+    }
+);</code></pre>
+<h4 id="getting-multiple-rows-of-data">getting multiple rows of data</h4>
+<p>to get multiple rows you have to use <code>all()</code>. we pass a callback function as argument to this method. we get an array of Flight
+objects as result. </p>
+<pre><code class="language-typescript">var a = new Flight();
+a.all(
+    (flights :Flight[])=&gt;{
+        console.log(flights);
+    }
+);</code></pre>
+<h3 id="adding-conditions">adding conditions</h3>
+<p>you also have where part of your query using <code>where()</code> function.</p>
+<p>the basic form of where clause is</p>
+<pre><code class="language-typescript">    var flights = new Flight();
+    flights.where('name','Air india').all(
+    (flights :Flight[])=&gt;{
+        console.log(flights);
+    }
+    //this translates to "...WHERE name = 'Air india'"
+);</code></pre>
+<p>if you want to use some other conditions other than <code>=</code> then you can use that as second parameter like</p>
+<pre><code class="language-typescript">flights.where('name','!=','Air india').all(
+    (flights :Flight[])=&gt;{
+        console.log(flights);
+    }
+);
+// means ".. WHERE name !=  'Air india'"</code></pre>
+<p>you can also chain multiple where conditions,</p>
+<pre><code class="language-typescript">flights.where('name','Air india').where('route_from','india')all(
+    (flights :Flight[])=&gt;{
+        console.log(flights);
+    }
+);
+
+// translates to ".. WHERE name =  'Air india' AND route_from = 'india'"</code></pre>
+<p>if you want OR conditions, you have <code>orWhere()</code>,</p>
+<pre><code class="language-typescript">flights.where('name','Air india').orWhere('route_from','india')all(
+    (flights :Flight[])=&gt;{
+        console.log(flights);
+    }
+);
+
+// translates to ".. WHERE name =  'Air india' OR route_from = 'india'"</code></pre>
+<p>finally there is an advanced form of where clause when you want to nest where clause with callback function</p>
+<pre><code class="language-typescript"> where((b)=&gt;{b.where('name','Air india').orWhere('name','Jet Airways')}).orWhere('route_from','india')
+// translates to ".. WHERE (name = 'Air india' or name = 'Jet Airways') OR route_from = 'india'</code></pre>
+<h3 id="delete">DELETE</h3>
+<p>you can perform an sql DELETE operation easily</p>
+<pre><code class="language-typescript">
+var flight = new Flight();
+flight.where("id","2").delete();
+</code></pre>
+<h3 id="update">UPDATE</h3>
+<p>UPDATE operations is just saving some updated data using <code>save()</code> after getting it using a read query.</p>
+<pre><code class="language-typescript">var a = new Flight();
+a.where("id","1").first(
+    (flight :Flight)=&gt;{
+        flight.name = "Air Asia"
+        flight.route_from = "Shanghai" 
+        flight.save();
+    }
+);</code></pre>
+                </section>
+
+            </div>
+        </main>
+
+        <footer>
+            <div class="container-fluid">
+                <p class="text-muted">
+                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/g/highlight.js@9.9.0(highlight.min.js+languages/typescript.min.js)"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>
