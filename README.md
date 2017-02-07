@@ -1,5 +1,6 @@
 # tsrecord
-ActiveRecord implementation using Typescript
+ActiveRecord implementation using Typescript.
+complete documentation :[https://haseebeqx.github.io/tsrecord/](https://haseebeqx.github.io/tsrecord/)
 
 # Conventions
 ### table name
