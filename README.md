@@ -31,7 +31,7 @@ class Flight extends Model{
 }
 ```
 
-or if you dont want the advatages of adding field names
+or if you don't want the advantages of adding field names
 
 ```typescript
 class Flight extends Model{
