@@ -1,1 +1,4 @@
 /.couscous/
+.vscode
+node_modules
+typings
